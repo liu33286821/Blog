@@ -48,7 +48,8 @@ obj.f(); //2
 ```
 ### 显示绑定
 
-通过```call```和```apply```方法。
+通过```call```和```apply```和ES5的```bind```方法，
+区别在于```call```和```apply```是立即执行而```bind```是手动执行。
 ```javascript
 function f() {
   console.log(this.a)
@@ -71,13 +72,6 @@ f.call(a); //1
 3. 这个对象会绑定到函数调用的this
 4. 如果函数没有返回其他对象，那么```new```表达式中的函数调用会自动返回这个新对象。
 
-- 手写一个new实现
-```javascript
-function create() {
-  var obj = new Object();
-  Con = [].shift().call(arguments)
-}
-```
 
 ### 箭头函数绑定
 
@@ -88,6 +82,11 @@ function f() {
 
 var obj = {a: 2}
 var obj2 = {a: 3}
-var bar = foo.call(obj2)
-bar.call(obj2)
+var bar = foo.call(obj)
+bar.call(obj2) // 2 不是3
 ```
+在上面的代码中，我们可以看到```f()```返回了一个箭头函数，这个箭头函数之后通过```call```把```obj```的this赋值给了foo，
+之后又通过```call```赋值给了obj2。 此时你有可能会猜想```console```会打印```2```，但是其实是```3```。
+
+因为在第一次通过```call```来绑定this的时候，箭头函数已经根据第一个```call```绑定this上了，第二次```call```并不会起作用。
+始终走向一点**箭头函数的绑定无法被修改。即使是new也不行**
